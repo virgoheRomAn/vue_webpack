@@ -7,6 +7,8 @@ const baseWebpackConfig = require('./webpack.base.conf');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
+const portfinder = require('portfinder')
 
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
@@ -38,6 +40,9 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     }
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env': '"development"'
+    }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
@@ -53,6 +58,27 @@ const devWebpackConfig = merge(baseWebpackConfig, {
   ]
 });
 
-module.exports = devWebpackConfig;
+
+module.exports = new Promise((resolve, reject) => {
+  portfinder.basePort = process.env.PORT || "8080"
+  portfinder.getPort((err, port) => {
+    if (err) {
+      reject(err)
+    } else {
+      process.env.PORT = port
+      devWebpackConfig.devServer.port = port
+      devWebpackConfig.plugins.push(new FriendlyErrorsPlugin({
+        compilationSuccessInfo: {
+          messages: [`Your application is running here: http://${devWebpackConfig.devServer.host}:${port}`],
+        },
+        onErrors: false
+      }))
+
+      resolve(devWebpackConfig)
+    }
+  })
+})
+
+// module.exports = devWebpackConfig;
 
 
