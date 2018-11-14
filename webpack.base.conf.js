@@ -1,6 +1,7 @@
 'use strict'
 const utils = require('./utils/utils');
 const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 module.exports = {
   context: path.resolve(__dirname, './'),
@@ -17,6 +18,7 @@ module.exports = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': utils.resolve('src'),
+      'assets': path.resolve(__dirname, './src/assets')
     }
   },
   module: {
@@ -53,6 +55,22 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         include: [utils.resolve('src'), utils.resolve('test'), utils.resolve('node_modules/webpack-dev-server/client')]
+      },
+      {
+        test: /\.(css|less)$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [{
+              loader: 'css-loader',
+              options: {
+                  importLoaders: 1
+              }
+          }, {
+              loader: 'postcss-loader',
+          }, {
+              loader: 'less-loader',
+          }]
+        })
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,

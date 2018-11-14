@@ -12,7 +12,7 @@ const portfinder = require('portfinder')
 
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
-    rules: utils.styleLoaders({ sourceMap: true, usePostCSS: true })
+    //rules: utils.styleLoaders({ sourceMap: true, usePostCSS: true })
   },
   devtool: 'cheap-module-eval-source-map',
   devServer: {
@@ -27,7 +27,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     compress: true,
     host: '127.0.0.1',
     port: "8080",
-    open: true,
+    open: false,
     overlay: {
       warnings: false,
       errors: true
